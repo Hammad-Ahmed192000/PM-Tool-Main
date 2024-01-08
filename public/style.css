@@ -1957,7 +1957,7 @@ input[type="checkbox"]:checked {
 
 
 select {
-    background: url(images/select-arrow-down-black.svg ) no-repeat right;
+    background: url(http://127.0.0.1:8000/images/select-arrow-down-black.svg ) no-repeat right;
     -webkit-appearance: none;
     /* background-position-x: right 21px; */
     background-position: right 17px center;
