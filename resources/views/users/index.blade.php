@@ -1,5 +1,7 @@
 @include('template.header')
 <body>
+    <div class="back-transparent-layer"></div>
+    
     <div class="content">
     @include('template.sidebar')
         <div class="right-side-content">

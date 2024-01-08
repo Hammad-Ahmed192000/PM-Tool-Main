@@ -12,12 +12,14 @@ class CompanyController extends Controller
 {
     public function index(){
        $page_title='Companies';
+       $side_param ='company';
        $companies=Companies::all();
-       return view('companies.index', compact('companies','page_title'));
+       return view('companies.index', compact('companies','page_title','side_param'));
     }
     public function view(){
         $page_title = 'Add Company';
-        return view('companies.addCompany', compact('page_title'));
+        $side_param ='company';
+        return view('companies.addCompany', compact('page_title','side_param'));
     }
 
     public function store(Request $request){

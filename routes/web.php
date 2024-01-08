@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompanyController;
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProjectController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -36,3 +37,17 @@ Route::get('/addCompanies', [CompanyController::class, 'view'])->name('Companies
 Route::post('/storeCompanies', [CompanyController::class, 'store'])->name('CompaniesStore');
 
 // comapnies module end
+
+// project start
+
+Route::get('/getProjects', [ProjectController::class, 'index'])->name('ProjectsList');
+
+Route::get('/addProjects', [ProjectController::class, 'view'])->name('ProjectsAdd');
+
+Route::post('/storeProjects', [ProjectController::class, 'store'])->name('ProjectsStore');
+
+
+Route::get('/get-users/{companyId}', [ProjectController::class, 'getUsers']);
+// project end
+
+Route::get('/getdocuments', [ProjectController::class, 'documents'])->name('DocumentsList');
