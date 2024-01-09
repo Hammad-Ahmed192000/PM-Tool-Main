@@ -9,5 +9,8 @@ class projectsTasks extends Model
 {
 
     use HasFactory;
-   
+    public function activity()
+    {
+        return $this->belongsTo(ProjectsActivity::class,'activityId');
+    }
 }

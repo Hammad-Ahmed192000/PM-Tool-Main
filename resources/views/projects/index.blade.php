@@ -1,4 +1,8 @@
+
 @include('template.header');
+@php
+    use App\Models\Companies;
+@endphp
 <body>
     <!-- Background Layer For Filters Opening  -->
     <div class="back-transparent-layer"></div>
@@ -333,28 +337,41 @@
                         <th>End Date</th>
                         <th>Status</th>
                         <th>Actions</th>
+                        @foreach($projects as $item)
+                       
                         <tr class="project-page-tr-dropdown">
                             <td>
-                                <input type="checkbox" name="" id=""> P1234
+                                <input type="checkbox" name="" id=""> P {{$item->id}}
                             </td>
                             <td>
-                                Maadi Innovative Website
+                            {{$item->name}}
                             </td>
                             <td>
-                                Maadi Tech & Co. Private, Ltd.
+                               @php 
+                                $company = Companies::where('id',$item->companyId)->first();
+                               @endphp
+                               {{$company->name}}
                             </td>
                             <td>
-                                20th Aug, 2022
+                            @if ($item->activities->isNotEmpty())
+                                {{ $item->activities->first()->startDate ?? 'N/A' }}
+                            @endif
                             </td>
                             <td>
-                                18th Feb, 2023
+                            @if ($item->activities->isNotEmpty())
+                                {{ $item->activities->first()->endDate ?? 'N/A' }}
+                            @endif
+                            
                             </td>
                             <td class="table-status-box">
-                                <select name="" id="">
+                                @if ($item->activities->isNotEmpty())
+                                    {{ $item->activities->first()->assignedStatus ?? 'N/A' }}
+                                @endif
+                                <!-- <select name="" id="">
                                     <option value="">In Progress</option>
                                     <option value="">To Do</option>
                                     <option value="">Done</option>
-                                </select>
+                                </select> -->
                             </td>
                             <td class="table-action-box">
                                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
@@ -393,6 +410,8 @@
                                 </svg>
                             </td>
                         </tr>
+
+                       
                         <tr class="project-activity-card">
                             <td colspan="10" class="">
                                 <svg class="project-activity-card-dir-arrow" width="64" height="310"
@@ -407,15 +426,18 @@
 
                                 <div class="project-activity-card-inner">
                                     <p class="project-activity-card-heading">
-                                        Activity
+                                        @if ($item->activities->isNotEmpty())
+                                            {{ ucfirst($item->activities->first()->title) ?? 'N/A' }}
+                                        @endif
                                     </p>
                                     <table>
                                         <th>Description</th>
                                         <tr>
-                                            <td>outlines the details of one project, including all its phases and
-                                                processes involved, in a single document. It addresses outlines the
-                                                details of one project, including all its phases and processes involved,
-                                                in a single document. It addresses...</td>
+                                            <td>
+                                                @if ($item->activities->isNotEmpty())
+                                                    {{ $item->activities->first()->description ?? 'N/A' }}
+                                                @endif
+                                            </td>
                                         </tr>
                                     </table>
                                 </div>
@@ -429,17 +451,7 @@
                                         <th style="width: 123px;">Status</th>
                                         <th style="width: 130px;">Start Date</th>
                                         <th style="width: 128px;">End Date</th>
-                                        <tr>
-                                            <td>outlines the details of one project, including all its phases and
-                                                processes
-                                                involved, in a single document. It addresses...</td>
-                                            <td>John Doe</td>
-                                            <td class="table-status-box">
-                                                <p>In Progress</p>
-                                            </td>
-                                            <td>20th Aug, 2022</td>
-                                            <td>18th Feb, 2023</td>
-                                        </tr>
+                                       
                                     </table>
                                     <div class="project-activity-task-card-inner-btn-row">
                                         <button>
@@ -462,6 +474,7 @@
                             </td>
                         </tr>
                         </tr>
+                        @endforeach
                         <tr class="project-page-tr-dropdown">
                             <td>
                                 <input type="checkbox" name="" id=""> P1234

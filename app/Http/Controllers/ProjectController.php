@@ -23,7 +23,9 @@ class ProjectController extends Controller
     public function index(){
         $page_title="Projects List";
         $side_param = 'project';
-        $projects=projects::all();
+        $projects = projects::with('activities.tasks')->get();
+        // echo '<pre>';
+        // print_r($projects);exit;
         return view('projects.index',compact('page_title','projects','side_param'));
     }
     public function view(){

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->integer('assignedTo');
-            $table->enum('assignedStatus', ['progress', 'inactive','completed', 'deleted'])->default('active');
+            $table->enum('assignedStatus', ['progress','inactive','completed', 'deleted']);
             $table->string('startDate');
             $table->string('endDate');
             $table->timestamps();

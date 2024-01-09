@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class projects extends Model
 {
     use HasFactory;
+    public function activities()
+    {
+        return $this->hasMany(ProjectsActivity::class,'projectId');
+    }
 }
