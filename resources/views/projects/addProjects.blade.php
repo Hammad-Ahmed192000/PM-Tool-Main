@@ -1,6 +1,7 @@
 @php
     use App\Models\Companies;
     use App\Models\User;
+    use Illuminate\Support\Facades\DB;
 @endphp
 @include('template.header');
 <body>
@@ -23,7 +24,7 @@
                         </svg>
                         PROJECT DETAILS
                     </div>
-                    <form action="{{route('ProjectsStore')}}" method="post"  enctype="multipart/form-data">
+                    <form action="{{route('ProjectsStore')}}" method="post" id="project" enctype="multipart/form-data">
                     @csrf
                     <div class="add-task-input-box">
                         <p>Company <span class="required-star">*</span></p>
@@ -37,7 +38,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="add-task-input-box-double">
+                    <div id="add-task-input-box-double" class="add-task-input-box-double">
                         <div class="add-task-input-box">
                             <p>Project No. <span class="required-star">*</span></p>
                             <input required  type="text" name="projectNo" id="" placeholder="Project Number">
@@ -69,7 +70,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="addProject-individual-section add-role-section">
+                <div id="projectdemo" class="addProject-individual-section add-role-section">
                     <div class="add-task-inner-heading">
                         <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -81,23 +82,32 @@
                     <div class="add-task-input-box-double">
                         <div class="add-task-input-box">
                             <p>Member Name <span class="required-star">*</span></p>
-                            <select name="" id="">
-                                <option value="">John Doe</option>
-                                <option value="">John</option>
-                                <option value="">Doe</option>
-                                <option value="">Adam</option>
+                            @php 
+                                $role_id =DB::table('roles')->where('role','Owner')->first();
+                                $users=User::whereNotIn('role_id', [$role_id->id])->get();
+        
+                            @endphp
+                            <select name="members[]" id="">
+                                @foreach($users as $item)    
+                                    <option value="{{$item->id}}">{{$item->fname}}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="add-task-input-box">
                             <p>Role <span class="required-star">*</span></p>
-                            <select name="" id="">
-                                <option value="">Architect</option>
-                                <option value="">Engineer</option>
-                                <option value="">Doctor</option>
-                                <option value="">Software Engineer</option>
+                            <select name="role[]" id="">
+                                @php 
+                                    $role_id =DB::table('roles')->where('role','Owner')->first();
+                                    $roles = DB::table('roles')->where('type','user')->whereNotIn('id', [$role_id->id])->get();
+                                @endphp
+                                @foreach($roles as $r)
+                                    <option value="{{$r->id}}">{{$r->role}}</option>
+                                @endforeach
+                                
                             </select>
                         </div>
                     </div>
+
                     <div class="add-project-add-role-plus-btn-row add-role-btn-add-project-btn-row">
                         <button class="add-role-btn-add-project">Add Role +</button>
                     </div>
@@ -287,32 +297,43 @@
                             Activity
                         </div>
                         <div class="add-task-input-box">
+                            <p>Title <span class="required-star">*</span></p>
+                            <input required type="text" name="activityTitle" id="" placeholder="Activity">
+                        </div>
+                        <div class="add-task-input-box">
                             <p>Description <span class="required-star">*</span></p>
-                            <textarea name="" id="" cols="30" rows="5"
-                                placeholder="Write Something about Task"></textarea>
+                            <textarea name="activityName" id="" cols="30" rows="5"
+                                placeholder="Write Something about Activity"></textarea>
                         </div>
                         <div class="add-project-activity-bottom-fields">
                             <div class="add-task-input-box-double ">
                                 <div class="add-task-input-box">
                                     <p>Assigned To <span class="required-star">*</span></p>
-                                    <input type="text" placeholder="Adam Smith">
-                                </div>
+                                    <select name="activityAssignedTo" >
+                                    @foreach($users as $u)
+                                        <option value="{{$u->id}}">{{$u->fname}}</option>
+                                    <!-- <input name="activityAssignedTo" type="text" placeholder="Adam Smith"> -->
+                               
+                                    @endforeach
+                                    </select>
+                                   
+                                    </div>
                                 <div class="add-task-input-box">
                                     <p>Status</p>
-                                    <select name="" id="">
-                                        <option value="">In Progress</option>
-                                        <option value="">Completed</option>
+                                    <select name="activityAssignedStatus" id="">
+                                        <option value="progress">In Progress</option>
+                                        <option value="completed">Completed</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="add-task-input-box-double">
                                 <div class="add-task-input-box">
                                     <p>Start Date <span class="required-star">*</span></p>
-                                    <input type="date">
+                                    <input name="activityStartDate" type="date">
                                 </div>
                                 <div class="add-task-input-box">
                                     <p>End Date <span class="required-star">*</span></p>
-                                    <input type="date">
+                                    <input name="activityEndDate" type="date">
                                 </div>
                             </div>
                         </div>
@@ -327,34 +348,39 @@
                             </div>
                             <div class="add-task-input-box">
                                 <p>Description <span class="required-star">*</span></p>
-                                <textarea name="" id="" cols="30" rows="5"
+                                <textarea name="taskDescription" id="" cols="30" rows="5"
                                     placeholder="Write Something about Task"></textarea>
                             </div>
                             <div class="add-task-input-box-double">
                                 <div class="add-task-input-box">
                                     <p>Assigned To <span class="required-star">*</span></p>
-                                    <input type="text" placeholder="Adam Smith">
+                                    <select>
+                                        @foreach($users as $u)
+                                            <option value="{{$u->id}}">{{$u->fname}}</option>
+                                        @endforeach
+                                    <select>
+                                    <!-- <input name="taskAssignedTo" type="text" placeholder="Adam Smith"> -->
                                 </div>
                                 <div class="add-task-input-box">
                                     <p>Status</p>
-                                    <select name="" id="" style="background-color: #fff; opacity: 0.8;">
-                                        <option value="">In Progress</option>
-                                        <option value="">Completed</option>
+                                    <select name="taskStatus" id="" style="background-color: #fff; opacity: 0.8;">
+                                        <option value="progress">In Progress</option>
+                                        <option value="completed">Completed</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="add-task-input-box-double">
                                 <div class="add-task-input-box">
                                     <p>Start Date <span class="required-star">*</span></p>
-                                    <input type="date">
+                                    <input name="taskStartDate" type="date">
                                 </div>
                                 <div class="add-task-input-box">
                                     <p>End Date <span class="required-star">*</span></p>
-                                    <input type="date">
+                                    <input name="taskEndDate" type="date">
                                 </div>
                             </div>
                             <div class="activity-task-activity-box-btn-row">
-                                <button>Add Task</button>
+                                <button type="button">Add Task</button>
                                 <button>Delete Task</button>
                             </div>
                         </div>

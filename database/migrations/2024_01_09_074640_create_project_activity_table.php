@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('projects_tasks', function (Blueprint $table) {
+        Schema::create('project_activity', function (Blueprint $table) {
             $table->id();
-            $table->integer('activityId');
+            $table->integer('projectId');
+            $table->string('title');
             $table->text('description');
             $table->integer('assignedTo');
-            $table->enum('assignedStatus', ['active', 'inactive','completed', 'deleted'])->default('active');
+            $table->enum('assignedStatus', ['progress', 'inactive','completed', 'deleted'])->default('active');
             $table->string('startDate');
             $table->string('endDate');
             $table->timestamps();
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('projects_tasks');
+        Schema::dropIfExists('project_activity');
     }
 };

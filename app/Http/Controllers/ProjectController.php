@@ -13,6 +13,8 @@ use App\Models\User;
 use App\Models\projectsDrawing;
 use App\Models\projectsInvoice;
 use App\Models\Companies;
+use App\Models\ProjectsActivity;
+use App\Models\projectsTasks;
 
 
 use Illuminate\Support\Facades\DB;
@@ -39,11 +41,18 @@ class ProjectController extends Controller
         // dd($request->all());
 
     }
-    public function store(Request $request)
+    public function fetchUsers(){
+        $role_id = DB::table('roles')->where('role','Owner')->first();
+        $users   = User::whereNotIn('role_id', [$role_id->id])->get()->toArray();
+        $roles   = DB::table('roles')->where('type','user')->whereNotIn('id', [$role_id->id])->get()->toArray();
+        return response()->json(['data' => $users,'roles' => $roles,], 200);
+    }
+    
+   public function store(Request $request)
     {
-        // echo '<pre>';
-        // print_r($request->all());
-        // exit;
+        foreach (array_combine($request->members, $request->role) as $userId => $roleId) {
+            User::where('id', $userId)->update(['role_id' => $roleId]);
+        }
        
         $project = new projects;
         $project->name = $request->name;
@@ -57,11 +66,7 @@ class ProjectController extends Controller
         $tableName = $project->getTable();
         $projectId = \DB::table($tableName)->insertGetId($data);
         
-         
-        // $result = $project->save();
         if($projectId){
-            // drawing form 
-            // dd($request->floor);
             $drawings = new projectsDrawing;
             $drawings->projectId = $projectId;
             $drawings->title = $request->title;
@@ -101,6 +106,33 @@ class ProjectController extends Controller
             $invoice->statusBuilding =$request->statusBuilding;
             $invoice->statusInvoice = $request->statusInvoice;
             $invoice->save();
+
+            // Activity details
+            $activity = new ProjectsActivity();
+            $activity->projectId = $projectId;
+            $activity->title = $request->activityTitle;
+            $activity->description = $request->description;
+            $activity->assignedTo = $request->activityAssignedTo;
+            $activity->assignedStatus = $request->activityAssignedStatus;
+            $activity->startDate = $request->activityStartDate;
+            $activity->endDate = $request->activityEndDate;
+            $result = $activity->toArray();
+
+            $activityTableName = $activity->getTable();
+            $activityId = \DB::table($activityTableName)->insertGetId($result);
+            if($activityId){
+                $tasks = new projectsTasks();
+                $tasks->activityId = $activityId;
+                $tasks->title = $request->activityTitle;
+                $tasks->description = $request->description;
+                $tasks->assignedTo = $request->activityAssignedTo;
+                $tasks->assignedStatus = $request->taskStatus;
+                $tasks->startDate = $request->activityStartDate;
+                $tasks->endDate = $request->activityEndDate;
+                $tasks->save();
+            }
+           
+            
             return redirect()->route('ProjectsList')->with('success','Project added successfully');
         }else{
             return redirect()->route('ProjectsList')->with('error','Something went wrong');

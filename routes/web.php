@@ -48,6 +48,9 @@ Route::post('/storeProjects', [ProjectController::class, 'store'])->name('Projec
 
 
 Route::get('/get-users/{companyId}', [ProjectController::class, 'getUsers']);
+
+Route::get('/fetch-users', [ProjectController::class, 'fetchUsers']);
+
 // project end
 
 Route::get('/getdocuments', [ProjectController::class, 'documents'])->name('DocumentsList');

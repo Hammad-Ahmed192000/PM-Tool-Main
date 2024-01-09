@@ -370,40 +370,66 @@ if (document.querySelector(".project-table")) {
     });
   });
 }
-
+let roleCount = 1;
+let roleMax=0;
+let addRoleButton;
 if (document.querySelector(".add-role-btn-add-project")) {
-  document
-    .querySelector(".add-role-btn-add-project")
-    .addEventListener("click", () => {
-      let newRow = document.createElement("div");
-      newRow.innerHTML = `<div class="add-task-input-box">
-  <p>Member Name <span class="required-star">*</span></p>
-  <select name="" id="">
-      <option value="">John Doe</option>
-      <option value="">John</option>
-      <option value="">Doe</option>
-      <option value="">Adam</option>
-  </select>
-</div>
-<div class="add-task-input-box">
-  <p>Role <span class="required-star">*</span></p>
-  <select name="" id="">
-      <option value="">Architect</option>
-      <option value="">Engineer</option>
-      <option value="">Doctor</option>
-      <option value="">Software Engineer</option>
-  </select>
-</div>`;
-      newRow.classList.add("add-task-input-box-double");
-      document
-        .querySelector(".add-role-section")
-        .insertBefore(
-          newRow,
-          document.querySelector(".add-role-btn-add-project-btn-row")
-        );
-    });
+  document.querySelector(".add-role-btn-add-project").addEventListener("click", () => {
+    // Fetch member names from the database
+    fetch('/fetch-users')
+      .then(response => response.json())
+      .then(data => {
+        const users = data.data;
+        const roles = data.roles;
+        roleMax = users.length;
+        console.log('roleMax',roleMax)
+        // Create options for member select
+        const rolesOptions = roles.map(role => `<option value="${role.id}">${role.role}</option>`).join('');
+        
+        const memberOptions = users.map(user => `<option value="${user.id}">${user.fname}</option>`).join('');
+        addRoleButton = document.querySelector(".add-role-btn-add-project");
+
+        // Create a new row with dynamic member options
+        const newRow = document.createElement("div");
+        newRow.innerHTML = `<div class="add-task-input-box">
+          <p>Member Name <span class="required-star">*</span></p>
+          <select required name="members[]" class="member-select">${memberOptions}</select>
+        </div>
+        <div class="add-task-input-box">
+          <p>Role <span class="required-star">*</span></p>
+          <select name="role[]" class="role-select">${rolesOptions}</select>
+           
+          <div class="activity-task-activity-box-btn-row">
+            <button onclick="removeRow(this)" class="delete-row-btn">Delete Role -</button>
+          </div>
+        </div>`;
+        newRow.classList.add("add-task-input-box-double");
+        roleCount++
+        const addRoleSection = document.querySelector(".add-role-section");
+        const addRoleBtnRow = document.querySelector(".add-role-btn-add-project-btn-row");
+        addRoleSection.insertBefore(newRow, addRoleBtnRow);
+        var form = document.getElementById("project");
+        form.appendChild(newRow);
+        if (roleCount >= roleMax) {
+          addRoleButton.style.backgroundColor = 'gray';
+          addRoleButton.title='limited users';
+          addRoleButton.disabled = true;
+         
+        }
+      })
+
+      .catch(error => console.error('Error fetching member names:', error));
+  });
 }
 
+function removeRow(button) {
+  // Get the parent row element and remove it
+  var row = button.closest('.add-task-input-box-double');
+  row.parentNode.removeChild(row);
+  roleCount--
+  addRoleButton.style.backgroundColor = 'Blue';
+  addRoleButton.disabled = false;
+}
 // Custom Select Option Dropdown
 if (document.querySelector(".select-value-custom-box")) {
   document.querySelectorAll(".select-value-custom-box").forEach((element) => {
