@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('projects_tasks', function (Blueprint $table) {
             $table->id();
             $table->integer('activityId');
+            $table->string('title');
             $table->text('description');
             $table->integer('assignedTo');
-            $table->enum('assignedStatus', ['active', 'inactive','completed', 'deleted'])->default('active');
+            $table->enum('assignedStatus', ['active','progress', 'inactive','completed', 'deleted'])->default('active');
             $table->string('startDate');
             $table->string('endDate');
             $table->timestamps();

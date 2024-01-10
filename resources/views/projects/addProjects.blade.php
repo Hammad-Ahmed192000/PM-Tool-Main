@@ -329,18 +329,18 @@
                             <div class="add-task-input-box-double">
                                 <div class="add-task-input-box">
                                     <p>Start Date <span class="required-star">*</span></p>
-                                    <input name="activityStartDate" type="date">
+                                    <input required name="activityStartDate" type="date">
                                 </div>
                                 <div class="add-task-input-box">
                                     <p>End Date <span class="required-star">*</span></p>
-                                    <input name="activityEndDate" type="date">
+                                    <input required name="activityEndDate" type="date">
                                 </div>
                             </div>
                         </div>
                         <div class="activity-task-activity-box-btn-row">
                             <button>Add Activity</button>
                             <!-- <button>Delete Activity</button> -->
-                            <button class="activity-task-activity-box-btn-add-task">Add Task</button>
+                            <button type="button" class="activity-task-activity-box-btn-add-task">Add Task</button>
                         </div>
                         <div class="activity-task-inner">
                             <div class="activity-task-activity-box">

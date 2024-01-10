@@ -46,6 +46,7 @@ Route::get('/addProjects', [ProjectController::class, 'view'])->name('ProjectsAd
 
 Route::post('/storeProjects', [ProjectController::class, 'store'])->name('ProjectsStore');
 
+Route::post('/detailsProjects', [ProjectController::class, 'details'])->name('ProjectsDetails');
 
 Route::get('/get-users/{companyId}', [ProjectController::class, 'getUsers']);
 

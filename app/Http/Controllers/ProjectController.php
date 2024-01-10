@@ -110,6 +110,7 @@ class ProjectController extends Controller
             $invoice->save();
 
             // Activity details
+            // dd($request->activityStartDate);
             $activity = new ProjectsActivity();
             $activity->projectId = $projectId;
             $activity->title = $request->activityTitle;
@@ -145,5 +146,35 @@ class ProjectController extends Controller
         $side_param = 'documents';
         $drawing   = projectsDrawing::all();
         return view('documents.documents',compact('page_title','drawing','side_param'));
+    }
+    public function details (Request $request){
+        echo'<pre>';
+        //   print_r($request->all());
+        // $columns = [$request->all()];
+       
+        $columns = array_keys($request->all());
+        $newcolumns = array_filter($columns, function ($key) {
+            return $key !== '_token';
+        });
+        $newcolumns = array_map(function ($column) {
+            if ($column === 'companyName') {
+                return 'projects.companyId as companyName';
+            }
+            if($column === 'startDate'){
+                return 'project_activity.startDate as StartDate';
+            }
+            return $column;
+        }, $newcolumns);
+        $newcolumns = array_map(function ($column) {
+            return str_replace(['activities.', 'tasks.'], ['activity.', 'task.'], $column);
+        }, $newcolumns);
+        
+        
+        DB::enableQueryLog();
+        $data = Projects::with(['activities.tasks'])->select(...$newcolumns)->get();
+        dd(DB::getQueryLog());
+        print_r($data);
+
+        
     }
 }
