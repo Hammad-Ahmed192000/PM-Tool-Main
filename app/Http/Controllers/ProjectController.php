@@ -148,20 +148,38 @@ class ProjectController extends Controller
         return view('documents.documents',compact('page_title','drawing','side_param'));
     }
     public function details (Request $request){
+        
+        $page_title="Dynamic Project Listing";
+        $side_param = 'projects';
         echo'<pre>';
-        //   print_r($request->all());
-        // $columns = [$request->all()];
        
-        $columns = array_keys($request->all());
+        $columns = array_keys($request->all());   
+        $action = array_filter($columns, function ($key) {
+            return $key == 'actionYes';
+        });
+
         $newcolumns = array_filter($columns, function ($key) {
-            return $key !== '_token';
+            return $key !== '_token' && $key !== 'actionYes';
         });
         $newcolumns = array_map(function ($column) {
+            if ($column === 'name') {
+                return 'projects.name as ProjectName';
+            }
             if ($column === 'companyName') {
-                return 'projects.companyId as companyName';
+                return 'projects.companyId as CompanyName';
             }
             if($column === 'startDate'){
                 return 'project_activity.startDate as StartDate';
+            }
+            if($column === 'endDate'){
+                return 'project_activity.endDate as EndDate';
+            }
+            if($column === 'projectStatus'){
+                return 'project_activity.assignedStatus as ProjectStatus';
+            }
+            
+            if($column === 'activityName'){
+                return 'project_activity.title as ActivityName';
             }
             return $column;
         }, $newcolumns);
@@ -169,11 +187,29 @@ class ProjectController extends Controller
             return str_replace(['activities.', 'tasks.'], ['activity.', 'task.'], $column);
         }, $newcolumns);
         
+        $joinClauses = [
+            'projects' => 'projects.id = project_activity.projectId',
+            'projects_tasks' => 'projects_tasks.activityId = project_activity.id',
+           
+            // Add other join clauses as needed for your specific case
+        ];
+      
+        $joinString = implode(' ', array_map(function ($table, $condition) {
+            return "LEFT JOIN $table ON $condition";
+        }, array_keys($joinClauses), $joinClauses));
         
-        DB::enableQueryLog();
-        $data = Projects::with(['activities.tasks'])->select(...$newcolumns)->get();
-        dd(DB::getQueryLog());
-        print_r($data);
+        $query = "SELECT " . implode(', ', $newcolumns) . " FROM project_activity $joinString";
+        
+        $finalcolumns = array_map(function ($column) {
+            // Split the column name by dot and get the last part
+            $parts = explode('as', $column);
+            return end($parts);
+        }, $newcolumns);
+        $data = DB::select($query);
+        // print_r($finalcolumns);
+        // print_r($data);exit;
+        return view('projects.projectsDynamicList',compact('page_title','data','action','finalcolumns','side_param'));
+   
 
         
     }
