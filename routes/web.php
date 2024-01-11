@@ -55,3 +55,15 @@ Route::get('/fetch-users', [ProjectController::class, 'fetchUsers']);
 // project end
 
 Route::get('/getdocuments', [ProjectController::class, 'documents'])->name('DocumentsList');
+
+
+Route::get('/optimize', function () {
+    \Artisan::call('optimize');
+    echo 'All Optimization done ';
+});
+
+Route::get('/cache', function () {
+    \Artisan::call('optimize:clear');
+    \Artisan::call('config:cache');
+    echo 'All cache Cleared';
+});

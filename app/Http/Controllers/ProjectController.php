@@ -152,6 +152,7 @@ class ProjectController extends Controller
         $page_title="Dynamic Project Listing";
         $side_param = 'projects';
         echo'<pre>';
+        // print_r($request->all());exit;
        
         $columns = array_keys($request->all());   
         $action = array_filter($columns, function ($key) {
@@ -164,6 +165,15 @@ class ProjectController extends Controller
         $newcolumns = array_map(function ($column) {
             if ($column === 'name') {
                 return 'projects.name as ProjectName';
+            }
+            if ($column === 'projectManager') {
+                return 'projects.managerId as projectManager';
+            }
+            if ($column === 'projectExective') {
+                return 'projects.exective as projectExective';
+            }
+            if ($column === 'projectDescription') {
+                return 'projects.description as projectDescription';
             }
             if ($column === 'companyName') {
                 return 'projects.companyId as CompanyName';
@@ -181,6 +191,9 @@ class ProjectController extends Controller
             if($column === 'activityName'){
                 return 'project_activity.title as ActivityName';
             }
+            if($column === 'memberName'){
+                return 'users.fname as member  Where users.role != \'1\'';
+            }
             return $column;
         }, $newcolumns);
         $newcolumns = array_map(function ($column) {
@@ -189,6 +202,8 @@ class ProjectController extends Controller
         
         $joinClauses = [
             'projects' => 'projects.id = project_activity.projectId',
+            'companies'=>'companies.id = projects.companyId',
+            'users'=>'users.companyId = companies.id',
             'projects_tasks' => 'projects_tasks.activityId = project_activity.id',
            
             // Add other join clauses as needed for your specific case
@@ -206,7 +221,7 @@ class ProjectController extends Controller
             return end($parts);
         }, $newcolumns);
         $data = DB::select($query);
-        // print_r($finalcolumns);
+        // print_r($finalcolumns);exit;
         // print_r($data);exit;
         return view('projects.projectsDynamicList',compact('page_title','data','action','finalcolumns','side_param'));
    
