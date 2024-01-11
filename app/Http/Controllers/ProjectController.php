@@ -24,8 +24,6 @@ class ProjectController extends Controller
         $page_title="Projects List";
         $side_param = 'project';
         $projects = projects::with('activities.tasks')->get();
-        // echo '<pre>';
-        // print_r($projects);exit;
         return view('projects.index',compact('page_title','projects','side_param'));
     }
     public function view(){
@@ -151,9 +149,8 @@ class ProjectController extends Controller
         
         $page_title="Dynamic Project Listing";
         $side_param = 'projects';
-        echo'<pre>';
-        // print_r($request->all());exit;
-       
+        // echo'<pre>';
+        
         $columns = array_keys($request->all());   
         $action = array_filter($columns, function ($key) {
             return $key == 'actionYes';
@@ -162,7 +159,13 @@ class ProjectController extends Controller
         $newcolumns = array_filter($columns, function ($key) {
             return $key !== '_token' && $key !== 'actionYes';
         });
+        
         $newcolumns = array_map(function ($column) {
+            $ownerRole = DB::table('roles')->where('role','Owner')->first();
+
+            if ($column === 'projectNo') {
+                return 'projects.id as ProjectNo';
+            }
             if ($column === 'name') {
                 return 'projects.name as ProjectName';
             }
@@ -176,8 +179,8 @@ class ProjectController extends Controller
                 return 'projects.description as projectDescription';
             }
             if ($column === 'companyName') {
-                return 'projects.companyId as CompanyName';
-            }
+                return 'companies.name as CompanyName';
+             }
             if($column === 'startDate'){
                 return 'project_activity.startDate as StartDate';
             }
@@ -191,8 +194,29 @@ class ProjectController extends Controller
             if($column === 'activityName'){
                 return 'project_activity.title as ActivityName';
             }
-            if($column === 'memberName'){
-                return 'users.fname as member  Where users.role != \'1\'';
+            if ($column === 'memberName') {
+                return 'CASE WHEN roles.id != ' . $ownerRole->id . ' THEN users.fname ELSE NULL END as member';
+            }elseif($column === 'memberRole') {
+                return "CASE WHEN roles.id != ' . $ownerRole->id . ' THEN  roles.role END as Role";    
+            } 
+          
+            if($column === 'drawwingName'){
+                return 'projects_drawings.title as DrawingTitle ';
+            }
+            if($column === 'drawingStatus'){
+                return 'projects_drawings.statusDrawing as DrawingStatus ';
+            }
+            if($column === 'invoiceStartDate'){
+                return 'projects_invoices.startDate as InvoiceStartDate ';
+            }
+            if($column === 'invoiceEndDate'){
+                return 'projects_invoices.endDate as invoiceEndDate ';
+            }
+            if($column === 'buildingStatus'){
+                return 'projects_invoices.statusBuilding as buildingStatus ';
+            }
+            if($column === 'invoiceStatus'){
+                return 'projects_invoices.statusInvoice as invoiceStatus ';
             }
             return $column;
         }, $newcolumns);
@@ -204,8 +228,10 @@ class ProjectController extends Controller
             'projects' => 'projects.id = project_activity.projectId',
             'companies'=>'companies.id = projects.companyId',
             'users'=>'users.companyId = companies.id',
+            'roles' => 'roles.id = users.role_id', 
             'projects_tasks' => 'projects_tasks.activityId = project_activity.id',
-           
+            'projects_drawings'=>'projects_drawings.projectId = projects.id',
+            'projects_invoices'=>'projects_invoices.projectId = projects.id'
             // Add other join clauses as needed for your specific case
         ];
       
@@ -213,7 +239,7 @@ class ProjectController extends Controller
             return "LEFT JOIN $table ON $condition";
         }, array_keys($joinClauses), $joinClauses));
         
-        $query = "SELECT " . implode(', ', $newcolumns) . " FROM project_activity $joinString";
+        $query = "SELECT " . implode(', ', $newcolumns) . " FROM project_activity $joinString ";
         
         $finalcolumns = array_map(function ($column) {
             // Split the column name by dot and get the last part
@@ -222,7 +248,8 @@ class ProjectController extends Controller
         }, $newcolumns);
         $data = DB::select($query);
         // print_r($finalcolumns);exit;
-        // print_r($data);exit;
+        // echo'<pre>';
+        //  print_r($data);exit;
         return view('projects.projectsDynamicList',compact('page_title','data','action','finalcolumns','side_param'));
    
 
