@@ -1037,6 +1037,9 @@ input[type="checkbox"]:checked {
 .progress-fifty-per {
     width: 50%;
 }
+.progress-full-per{
+    width: 100%;
+}
 
 .project-list-card-task-total {
     display: flex;

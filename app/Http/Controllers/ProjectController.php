@@ -36,9 +36,7 @@ class ProjectController extends Controller
         $users = User::where('companyId', $companyId)->orderByRaw("role_id = (SELECT id FROM roles WHERE id = ?) DESC", [$role_id->id])
         ->orderBy('role_id', 'desc')
         ->get();
-        
         return response()->json($users);
-        // dd($request->all());
 
     }
     public function fetchUsers(){
@@ -55,8 +53,6 @@ class ProjectController extends Controller
                 User::where('id', $userId)->update(['role_id' => $roleId]);
             }
         }
-       
-       
         $project = new projects;
         $project->name = $request->name;
         $project->description = $request->description;
@@ -136,15 +132,19 @@ class ProjectController extends Controller
                     $tasks->endDate = $request->taskEndDate;
                     $tasks->save();
                 }
-               
 
-            }
-           
-            
+            }        
             return redirect()->route('ProjectsList')->with('success','Project added successfully');
         }else{
             return redirect()->route('ProjectsList')->with('error','Something went wrong');
         }
+    }
+    public function cardList(){
+        $page_title ="projects Card List";
+        $side_param = 'projects Card';
+        $projects=projects::with('activities.tasks')->get();
+        return view('projects.projectList',compact('page_title','projects','side_param'));
+
     }
     public function documents(){
         $page_title ="Documents List";

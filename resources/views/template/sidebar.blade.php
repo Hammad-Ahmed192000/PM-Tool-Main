@@ -109,10 +109,11 @@
                             <a href="{{route('ProjectsList')}}">
                                 Projects
                             </a>
-                            <!-- <a href="./projectList.html">
+                            <a href="{{route('ProjectsCardList')}}">
                                 Card View
                             </a>
-                            <a href="#">
+                            
+                            <!-- <a href="#">
                                 Timeline View
                             </a> -->
                             <a href="{{route('ProjectsAdd')}}">

@@ -42,6 +42,9 @@ Route::post('/storeCompanies', [CompanyController::class, 'store'])->name('Compa
 
 Route::get('/getProjects', [ProjectController::class, 'index'])->name('ProjectsList');
 
+Route::get('/getProjectsCard', [ProjectController::class, 'cardList'])->name('ProjectsCardList');
+
+
 Route::get('/addProjects', [ProjectController::class, 'view'])->name('ProjectsAdd');
 
 Route::post('/storeProjects', [ProjectController::class, 'store'])->name('ProjectsStore');
@@ -51,6 +54,8 @@ Route::post('/detailsProjects', [ProjectController::class, 'details'])->name('Pr
 Route::get('/get-users/{companyId}', [ProjectController::class, 'getUsers']);
 
 Route::get('/fetch-users', [ProjectController::class, 'fetchUsers']);
+
+
 
 // project end
 
