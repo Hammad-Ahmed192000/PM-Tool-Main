@@ -436,17 +436,13 @@
                                     <div class="project-activity-card-inner">
                                         <p class="project-activity-card-heading">
                                             {{$activity->title}}
-                                            @if ($item->activities->isNotEmpty())
-                                                {{ ucfirst($item->activities->first()->title) ?? 'N/A' }}
-                                            @endif
+                                           
                                         </p>
                                         <table>
                                             <th>Description</th>
                                             <tr>
                                                 <td>
-                                                    @if ($item->activities->isNotEmpty())
-                                                        {{ $item->activities->first()->description ?? 'N/A' }}
-                                                    @endif
+                                                {{$activity->description}}
                                                 </td>
                                             </tr>
                                         </table>
@@ -454,7 +450,7 @@
                                     @foreach($activity->tasks as $task)
                                         <div class="project-activity-card-inner project-activity-task-card-inner">
                                             <p class="project-activity-card-heading">
-                                                Task 1 : {{$task->title}}
+                                                Task 1 
                                             </p>
                                             <table>
                                                 <th>Description</th>

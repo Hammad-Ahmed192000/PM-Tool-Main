@@ -50,9 +50,12 @@ class ProjectController extends Controller
     
    public function store(Request $request)
     {
-        foreach (array_combine($request->members, $request->role) as $userId => $roleId) {
-            User::where('id', $userId)->update(['role_id' => $roleId]);
+        if(!empty($request->members)){
+            foreach (array_combine($request->members, $request->role) as $userId => $roleId) {
+                User::where('id', $userId)->update(['role_id' => $roleId]);
+            }
         }
+       
        
         $project = new projects;
         $project->name = $request->name;
@@ -122,15 +125,19 @@ class ProjectController extends Controller
             $activityTableName = $activity->getTable();
             $activityId = \DB::table($activityTableName)->insertGetId($result);
             if($activityId){
-                $tasks = new projectsTasks();
-                $tasks->activityId = $activityId;
-                $tasks->title = $request->activityTitle;
-                $tasks->description = $request->description;
-                $tasks->assignedTo = $request->activityAssignedTo;
-                $tasks->assignedStatus = $request->taskStatus;
-                $tasks->startDate = $request->activityStartDate;
-                $tasks->endDate = $request->activityEndDate;
-                $tasks->save();
+                if(!empty($request->taskDescription)){
+                    $tasks = new projectsTasks();
+                    $tasks->activityId = $activityId;
+                    $tasks->title = '';
+                    $tasks->description = $request->taskDescription;
+                    $tasks->assignedTo = $request->taskAssignedTo;
+                    $tasks->assignedStatus = $request->taskStatus;
+                    $tasks->startDate = $request->taskStartDate;
+                    $tasks->endDate = $request->taskEndDate;
+                    $tasks->save();
+                }
+               
+
             }
            
             

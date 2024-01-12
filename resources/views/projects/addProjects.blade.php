@@ -87,7 +87,7 @@
                                 $users=User::whereNotIn('role_id', [$role_id->id])->get();
         
                             @endphp
-                            <select name="members[]" id="">
+                            <select name="members[]" id="" @if(count($users) ==1) disabled @endif>
                                 @foreach($users as $item)    
                                     <option value="{{$item->id}}">{{$item->fname}}</option>
                                 @endforeach
@@ -95,22 +95,38 @@
                         </div>
                         <div class="add-task-input-box">
                             <p>Role <span class="required-star">*</span></p>
-                            <select name="role[]" id="">
-                                @php 
-                                    $role_id =DB::table('roles')->where('role','Owner')->first();
-                                    $roles = DB::table('roles')->where('type','user')->whereNotIn('id', [$role_id->id])->get();
-                                @endphp
-                                @foreach($roles as $r)
-                                    <option value="{{$r->id}}">{{$r->role}}</option>
+                            @php 
+                                $role_id =DB::table('roles')->where('role','Owner')->first();
+                                $roles = DB::table('roles')->where('type','user')->whereNotIn('id', [$role_id->id])->get();
+                            @endphp
+                          
+                            <select name="role[]">
+                                @foreach ($users as $user)
+                                    @php
+                                        $role_id = DB::table('roles')->where('id', $user->role_id)->get();
+                                    @endphp
+
+                                    @foreach ($role_id as $r)
+                                        <option {{ count($users) == 1 ? 'selected' : '' }} value="{{ $r->id }}">{{ $r->role }}</option>
+                                    @endforeach
                                 @endforeach
-                                
+
+                                @if (count($users) != 1)
+                                    @foreach ($roles as $r)
+                                        <option value="{{ $r->id }}">{{ $r->role }}</option>
+                                    @endforeach
+                                @endif
                             </select>
+
+                                
                         </div>
                     </div>
-
+                    @if (count($users) != 1)
                     <div class="add-project-add-role-plus-btn-row add-role-btn-add-project-btn-row">
                         <button class="add-role-btn-add-project">Add Role +</button>
                     </div>
+                    @endif
+                    
                 </div>
                 <div class="addProject-individual-section">
                     <div class="add-task-inner-heading">
@@ -298,11 +314,11 @@
                         </div>
                         <div class="add-task-input-box">
                             <p>Title <span class="required-star">*</span></p>
-                            <input required type="text" name="activityTitle" id="" placeholder="Activity">
+                            <input required required type="text" name="activityTitle" id="" placeholder="Activity">
                         </div>
                         <div class="add-task-input-box">
                             <p>Description <span class="required-star">*</span></p>
-                            <textarea name="activityName" id="" cols="30" rows="5"
+                            <textarea required name="activityName" id="" cols="30" rows="5"
                                 placeholder="Write Something about Activity"></textarea>
                         </div>
                         <div class="add-project-activity-bottom-fields">
@@ -346,15 +362,16 @@
                             <div class="activity-task-activity-box">
                                 Task
                             </div>
+                            
                             <div class="add-task-input-box">
                                 <p>Description <span class="required-star">*</span></p>
-                                <textarea name="taskDescription" id="" cols="30" rows="5"
+                                <textarea  name="taskDescription" id="" cols="30" rows="5"
                                     placeholder="Write Something about Task"></textarea>
                             </div>
                             <div class="add-task-input-box-double">
                                 <div class="add-task-input-box">
                                     <p>Assigned To <span class="required-star">*</span></p>
-                                    <select>
+                                    <select name="taskAssignedTo">
                                         @foreach($users as $u)
                                             <option value="{{$u->id}}">{{$u->fname}}</option>
                                         @endforeach
@@ -372,11 +389,11 @@
                             <div class="add-task-input-box-double">
                                 <div class="add-task-input-box">
                                     <p>Start Date <span class="required-star">*</span></p>
-                                    <input name="taskStartDate" type="date">
+                                    <input  name="taskStartDate" type="date">
                                 </div>
                                 <div class="add-task-input-box">
                                     <p>End Date <span class="required-star">*</span></p>
-                                    <input name="taskEndDate" type="date">
+                                    <input  name="taskEndDate" type="date">
                                 </div>
                             </div>
                             <div class="activity-task-activity-box-btn-row">
