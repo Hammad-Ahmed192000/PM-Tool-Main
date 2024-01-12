@@ -195,11 +195,10 @@ class ProjectController extends Controller
                 return 'project_activity.title as ActivityName';
             }
             if ($column === 'memberName') {
-                return 'CASE WHEN roles.id != ' . $ownerRole->id . ' THEN users.fname ELSE NULL END as member';
+                return 'users.fname  as member';
             }elseif($column === 'memberRole') {
-                return "CASE WHEN roles.id != ' . $ownerRole->id . ' THEN  roles.role END as Role";    
+                return "CASE WHEN roles.id != " . $ownerRole->id . " THEN  roles.role END as Role";    
             } 
-          
             if($column === 'drawwingName'){
                 return 'projects_drawings.title as DrawingTitle ';
             }
@@ -238,18 +237,21 @@ class ProjectController extends Controller
         $joinString = implode(' ', array_map(function ($table, $condition) {
             return "LEFT JOIN $table ON $condition";
         }, array_keys($joinClauses), $joinClauses));
+        $distinctColumns = implode(', ', array_unique($newcolumns));
+
+        $query = "WITH cte AS (SELECT DISTINCT $distinctColumns FROM project_activity $joinString)
+        SELECT * FROM cte ";
         
-        $query = "SELECT " . implode(', ', $newcolumns) . " FROM project_activity $joinString ";
         
+        $data = DB::select($query);
+        
+        // echo '<pre>';
+        // print_r($data);exit;
         $finalcolumns = array_map(function ($column) {
-            // Split the column name by dot and get the last part
+           
             $parts = explode('as', $column);
             return end($parts);
         }, $newcolumns);
-        $data = DB::select($query);
-        // print_r($finalcolumns);exit;
-        // echo'<pre>';
-        //  print_r($data);exit;
         return view('projects.projectsDynamicList',compact('page_title','data','action','finalcolumns','side_param'));
    
 
