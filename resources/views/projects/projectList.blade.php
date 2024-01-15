@@ -146,7 +146,13 @@
                                                         </clipPath>
                                                     </defs>
                                                 </svg>
-                                                0/1
+                                                @if($activity->assignedStatus == 'progress')
+                                                    0.5
+                                                @elseif($activity->assignedStatus == 'completed')
+                                                    1
+                                                @else
+                                                    0
+                                                @endif/1
                                             </div>
                                         </div>
                                     </div>
@@ -351,7 +357,13 @@
                                                     </clipPath>
                                                 </defs>
                                             </svg>
-                                            1/1
+                                            @if($activity->assignedStatus == 'progress')
+                                               0.5
+                                            @elseif($activity->assignedStatus == 'completed')
+                                                1
+                                            @else
+                                                0
+                                            @endif/1
                                         </div>
                                     </div>
                                 </div>
