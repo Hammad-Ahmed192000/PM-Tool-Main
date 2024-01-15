@@ -373,9 +373,23 @@
                             
                             </td>
                             <td class="table-status-box">
-                                @if ($item->activities->isNotEmpty())
-                                    {{ $item->activities->first()->assignedStatus ?? 'N/A' }}
-                                @endif
+                                @foreach($item->activities as $activity)
+                                    @php $totalTasks = count($activity->tasks); @endphp
+                                    @if($totalTasks == 0 )
+                                        @if ($item->activities->isNotEmpty())
+                                            {{ $item->activities->first()->assignedStatus ?? 'N/A' }}
+                                        @endif
+                                    
+                                    @else
+                                        @foreach($activity->tasks as $task)
+                                            {{$task->assignedStatus}}
+                                        @endforeach
+                                      
+                                    @endif
+                                    
+                                @endforeach
+                                
+                               
                                 <!-- <select name="" id="">
                                     <option value="">In Progress</option>
                                     <option value="">To Do</option>
